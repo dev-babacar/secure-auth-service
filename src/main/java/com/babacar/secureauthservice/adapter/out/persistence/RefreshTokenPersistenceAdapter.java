@@ -18,9 +18,18 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenRepository {
 
     @Override
     public RefreshToken save(RefreshToken token) {
-        RefreshTokenEntity entity = toEntity(token);
-        RefreshTokenEntity saved = jpaRepository.save(entity);
-        return toDomain(saved);
+        // Cherche si le token existe déjà en base
+        return jpaRepository.findById(token.id())
+                .map(existing -> {
+                    // UPDATE — met à jour le champ revoked
+                    existing.setRevoked(token.revoked());
+                    return toDomain(jpaRepository.save(existing));
+                })
+                .orElseGet(() -> {
+                    // INSERT — nouveau token
+                    RefreshTokenEntity entity = toEntity(token);
+                    return toDomain(jpaRepository.save(entity));
+                });
     }
 
     @Override

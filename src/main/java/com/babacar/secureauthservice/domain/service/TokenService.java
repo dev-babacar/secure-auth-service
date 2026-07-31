@@ -28,29 +28,39 @@ public class TokenService {
     }
 
     public RefreshToken rotate(String oldTokenHash, String newTokenHash) {
-        // règle métier : récupère l'ancien token
         RefreshToken old = refreshTokenRepository
                 .findByTokenHash(oldTokenHash)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Token not found"
+                        "Token introuvable ou expiré"
                 ));
 
-        // règle métier : détection de vol
+        // Détection de vol — ADR-005
         if (old.revoked()) {
             refreshTokenRepository.revokeAllByFamily(old.family());
             throw new IllegalStateException(
-                    "Token reuse detected — family revoked"
+                    "Token réutilisé détecté — session révoquée"
             );
         }
 
-        // nouveau token, même famille
+        // Révoque l'ancien token
+        RefreshToken revoked = new RefreshToken(
+                old.id(),
+                old.tokenHash(),
+                old.userId(),
+                old.expiresAt(),
+                true,           // révoqué
+                old.family()
+        );
+        refreshTokenRepository.save(revoked);
+
+        // Émet le nouveau token — même famille
         RefreshToken newToken = new RefreshToken(
                 UUID.randomUUID(),
                 newTokenHash,
                 old.userId(),
                 Instant.now().plusSeconds(7 * 24 * 3600),
                 false,
-                old.family() // même famille
+                old.family()    // même famille
         );
         return refreshTokenRepository.save(newToken);
     }
