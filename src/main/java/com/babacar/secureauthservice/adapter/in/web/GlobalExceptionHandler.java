@@ -52,10 +52,12 @@ public class GlobalExceptionHandler {
     // Erreur inattendue
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneric(Exception ex) {
+        ex.printStackTrace();
         ProblemDetail problem = ProblemDetail
                 .forStatusAndDetail(
                         HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Une erreur inattendue s'est produite"
+                        ex.getMessage()
+                        //"Une erreur inattendue s'est produite"
                 );
         problem.setType(URI.create("https://auth.local/errors/internal"));
         problem.setTitle("Erreur interne");

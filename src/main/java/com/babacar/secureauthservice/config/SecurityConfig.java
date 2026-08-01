@@ -25,6 +25,8 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/refresh",
+                                "/api/auth/mfa/setup",
+                                "/api/auth/mfa/verify",
                                 "/actuator/health",
                                 "/login"
                         ).permitAll()

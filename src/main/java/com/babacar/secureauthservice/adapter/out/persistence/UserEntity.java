@@ -27,16 +27,24 @@ public class UserEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "mfa_secret")
+    private String mfaSecret;
+
+    @Column(name = "mfa_verified", nullable = false)
+    private boolean mfaVerified;
+
     protected UserEntity() {}
 
     public UserEntity(UUID id, String email, String password,
-                      RoleEntity role, boolean mfaEnabled, Instant createdAt) {
+                      RoleEntity role, boolean mfaEnabled, Instant createdAt ,String mfaSecret ,boolean mfaVerified) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
         this.mfaEnabled = mfaEnabled;
         this.createdAt = createdAt;
+        this.mfaSecret = mfaSecret;
+        this.mfaVerified = mfaVerified;
     }
 
     public UUID getId() { return id; }
@@ -45,4 +53,9 @@ public class UserEntity {
     public RoleEntity getRole() { return role; }
     public boolean isMfaEnabled() { return mfaEnabled; }
     public Instant getCreatedAt() { return createdAt; }
+    public String getMfaSecret() { return mfaSecret; }
+    public boolean isMfaVerified() { return mfaVerified; }
+
+    public void setMfaSecret(String mfaSecret) { this.mfaSecret = mfaSecret; }
+    public void setMfaVerified(boolean mfaVerified) { this.mfaVerified = mfaVerified; }
 }
