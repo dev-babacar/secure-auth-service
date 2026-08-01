@@ -30,6 +30,8 @@ public class AuthService {
                 email,
                 passwordHash,
                 Role.USER,
+                false,
+                null,
                 false
         );
 

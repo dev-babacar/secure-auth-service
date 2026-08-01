@@ -43,6 +43,27 @@ public class UserPersistenceAdapter implements UserRepository {
         return jpaRepository.existsByEmail(email);
     }
 
+    @Override
+    public User updateMfaSecret(UUID userId, String secret) {
+        UserEntity entity = jpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Utilisateur introuvable"
+                ));
+        entity.setMfaSecret(secret);
+        entity.setMfaVerified(false);
+        return toDomain(jpaRepository.save(entity));
+    }
+
+    @Override
+    public User enableMfa(UUID userId) {
+        UserEntity entity = jpaRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Utilisateur introuvable"
+                ));
+        entity.setMfaVerified(true);
+        return toDomain(jpaRepository.save(entity));
+    }
+
     // ─── Mappers ───
 
     private UserEntity toEntity(User user) {
@@ -52,7 +73,9 @@ public class UserPersistenceAdapter implements UserRepository {
                 user.passwordHash(),
                 RoleEntity.valueOf(user.role().name()),
                 user.mfaEnabled(),
-                Instant.now()
+                Instant.now(),
+                user.mfaSecret(),
+                user.mfaVerified()
         );
     }
 
@@ -62,7 +85,9 @@ public class UserPersistenceAdapter implements UserRepository {
                 entity.getEmail(),
                 entity.getPassword(),
                 Role.valueOf(entity.getRole().name()),
-                entity.isMfaEnabled()
+                entity.isMfaEnabled(),
+                entity.getMfaSecret(),
+                entity.isMfaVerified()
         );
     }
 }

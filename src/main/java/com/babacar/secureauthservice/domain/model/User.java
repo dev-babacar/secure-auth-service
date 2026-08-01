@@ -7,5 +7,7 @@ public record User(
         String email,
         String passwordHash,
         Role role,
-        boolean mfaEnabled
+        boolean mfaEnabled,
+        String mfaSecret,      // ← ajouté
+        boolean mfaVerified
 ) {}

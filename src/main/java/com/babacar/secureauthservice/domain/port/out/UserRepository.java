@@ -9,4 +9,6 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
     Optional<User> findById(UUID id);
     boolean existsByEmail(String email);
+    User updateMfaSecret(UUID userId, String secret);  // ← ajouté
+    User enableMfa(UUID userId);
 }
