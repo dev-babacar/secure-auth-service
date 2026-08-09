@@ -1,11 +1,9 @@
 package com.babacar.secureauthservice.adapter.in.web;
 
-import com.babacar.secureauthservice.adapter.in.web.dto.LoginRequest;
-import com.babacar.secureauthservice.adapter.in.web.dto.RefreshRequest;
-import com.babacar.secureauthservice.adapter.in.web.dto.RegisterRequest;
-import com.babacar.secureauthservice.adapter.in.web.dto.TokenResponse;
+import com.babacar.secureauthservice.adapter.in.web.dto.*;
 import com.babacar.secureauthservice.domain.model.LoginResult;
 import com.babacar.secureauthservice.domain.port.in.LoginUseCase;
+import com.babacar.secureauthservice.domain.port.in.LogoutUseCase;
 import com.babacar.secureauthservice.domain.port.in.RefreshTokenUseCase;
 import com.babacar.secureauthservice.domain.port.in.RegisterUserUseCase;
 import jakarta.validation.Valid;
@@ -19,13 +17,16 @@ public class AuthController {
     private final RegisterUserUseCase registerUserUseCase;
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
+    private final LogoutUseCase logoutUseCase;
 
     public AuthController(RegisterUserUseCase registerUserUseCase,
                           LoginUseCase loginUseCase,
-                          RefreshTokenUseCase refreshTokenUseCase) {
+                          RefreshTokenUseCase refreshTokenUseCase,
+                          LogoutUseCase logoutUseCase) {
         this.registerUserUseCase = registerUserUseCase;
         this.loginUseCase = loginUseCase;
         this.refreshTokenUseCase = refreshTokenUseCase;
+        this.logoutUseCase = logoutUseCase;
     }
 
     @PostMapping("/register")
@@ -58,5 +59,17 @@ public class AuthController {
         return ResponseEntity.ok(
                 TokenResponse.of(result.accessToken(), result.refreshToken())
         );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @Valid @RequestBody LogoutRequest request) {
+        logoutUseCase.logout(request.token());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<String> me() {
+        return ResponseEntity.ok("Token valide — tu es authentifié");
     }
 }
