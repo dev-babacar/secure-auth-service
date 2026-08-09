@@ -3,9 +3,9 @@ spring:
     name: auth-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/authdb
-    username: postgres
-    password: itachi
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/authdb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:itachi}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -24,12 +24,12 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   mail:
-    host: localhost
-    port: 1025
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
     properties:
       mail:
         smtp:
@@ -38,7 +38,7 @@ spring:
             enable: false
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 management:
   endpoints:
