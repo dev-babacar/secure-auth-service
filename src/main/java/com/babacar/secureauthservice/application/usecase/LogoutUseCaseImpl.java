@@ -1,6 +1,7 @@
 package com.babacar.secureauthservice.application.usecase;
 
 import com.babacar.secureauthservice.domain.port.in.LogoutUseCase;
+import com.babacar.secureauthservice.domain.port.out.AuditLogRepository;
 import com.babacar.secureauthservice.domain.port.out.TokenBlacklist;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -14,11 +15,14 @@ public class LogoutUseCaseImpl implements LogoutUseCase {
 
     private final TokenBlacklist tokenBlacklist;
     private final JwtDecoder jwtDecoder;
+    private final AuditLogRepository auditLogRepository;
 
     public LogoutUseCaseImpl(TokenBlacklist tokenBlacklist,
-                             JwtDecoder jwtDecoder) {
+                             JwtDecoder jwtDecoder,
+                             AuditLogRepository auditLogRepository) {
         this.tokenBlacklist = tokenBlacklist;
         this.jwtDecoder = jwtDecoder;
+        this.auditLogRepository = auditLogRepository;
     }
 
     @Override
@@ -36,6 +40,18 @@ public class LogoutUseCaseImpl implements LogoutUseCase {
 
         if (!ttl.isNegative()) {
             tokenBlacklist.blacklist(jti, ttl);
+        }
+
+        // Audit log
+        String subject = jwt.getSubject();
+        if (subject != null) {
+            try {
+                auditLogRepository.log(
+                        java.util.UUID.fromString(subject),
+                        "LOGOUT",
+                        null
+                );
+            } catch (Exception ignored) {}
         }
     }
 }
