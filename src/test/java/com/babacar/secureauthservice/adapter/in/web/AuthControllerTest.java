@@ -4,6 +4,7 @@ import com.babacar.secureauthservice.domain.model.LoginResult;
 import com.babacar.secureauthservice.domain.port.in.LoginUseCase;
 import com.babacar.secureauthservice.domain.port.in.RefreshTokenUseCase;
 import com.babacar.secureauthservice.domain.port.in.RegisterUserUseCase;
+import com.babacar.secureauthservice.domain.port.out.TokenBlacklist;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,6 +39,12 @@ class AuthControllerTest {
 
     @MockBean
     private RefreshTokenUseCase refreshTokenUseCase;
+
+    @MockBean
+    private JwtDecoder jwtDecoder;
+
+    @MockBean
+    private TokenBlacklist tokenBlacklist;
 
     @Test
     @DisplayName("POST /register : retourne 201 si données valides")
